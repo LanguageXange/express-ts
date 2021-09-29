@@ -13,6 +13,25 @@ exports.controller = void 0;
 require("reflect-metadata");
 var AppRouter_1 = require("../../AppRouter");
 var MetadataKeys_1 = require("./MetadataKeys");
+// create a middleware function
+function bodyValidators(keys) {
+    return function (req, res, next) {
+        if (!req.body) {
+            res.status(422).send("invalid request!");
+            return;
+        }
+        for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+            var key = keys_1[_i];
+            if (!req.body[key]) {
+                res
+                    .status(422)
+                    .send("invalid!!! missing property myemail or mypassword");
+                return;
+            }
+        }
+        next();
+    };
+}
 function controller(prefixRoute) {
     // Function here refers to constructor function - this decorator is applying to the class
     return function (target) {
@@ -25,8 +44,13 @@ function controller(prefixRoute) {
             var method = Reflect.getMetadata(MetadataKeys_1.MetadataKeys.method, target.prototype, key);
             var middlewares = Reflect.getMetadata(MetadataKeys_1.MetadataKeys.middleware, target.prototype, key) ||
                 [];
+            var requiredBodyProps = Reflect.getMetadata(MetadataKeys_1.MetadataKeys.validator, target.prototype, key) ||
+                [];
+            // console.log(requiredBodyProps, "what r requiredBodyProps"); --> whatever you pass in the decorator inside LoginController.ts file
+            var validator = bodyValidators(requiredBodyProps);
             if (path) {
-                router[method](prefixRoute + path, __spreadArray([], middlewares, true), routeHandler);
+                router[method].apply(router, __spreadArray(__spreadArray([prefixRoute + path], middlewares, false), [validator,
+                    routeHandler], false));
             }
         }
     };
