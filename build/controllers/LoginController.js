@@ -9,15 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var decorators_1 = require("./decorators");
+var decorators_1 = require("./decorators"); // remember that we have a index.ts file inside decorator folder
+// create a testing middleware to see if everything is working
+function logger(req, res, next) {
+    console.log("Request was made - middleware is working!");
+    next();
+}
 var LoginController = /** @class */ (function () {
     function LoginController() {
     }
     LoginController.prototype.getLogin = function (req, res) {
         res.send("<h1> Helloooooooooooo</h1>\n        <form method='POST'>\n        <div>\n        <label for=\"email\">Email</label>\n        <input name=\"myemail\" id=\"email\" type=\"email\"/>\n       \n       \n        <label for=\"password\">Password</label>\n        <input name=\"mypassword\" id=\"password\" type=\"password\"/>\n       \n        \n        <button type='submit'>Submit</button>\n        </div>\n        </form>\n        \n        ");
     };
+    LoginController.prototype.testing = function () {
+        console.log("this function does nothing");
+    };
     __decorate([
         (0, decorators_1.get)("/login"),
+        (0, decorators_1.use)(logger) // now if we go to "localhost:3000/auth/login" we should see
+        ,
         __metadata("design:type", Function),
         __metadata("design:paramtypes", [Object, Object]),
         __metadata("design:returntype", void 0)
